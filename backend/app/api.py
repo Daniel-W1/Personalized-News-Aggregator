@@ -1,0 +1,77 @@
+from fastapi import FastAPI, Body, Depends
+from sqlalchemy.orm import Session
+from app.auth.auth_handler import sign_jwt, hash_password, get_current_user
+from app.request_schemas import UserSignupSchema, UserLoginSchema
+from app.database import get_db, engine
+from app.models.user import User
+from app.models import user as models
+
+# Create tables
+models.Base.metadata.create_all(bind=engine)
+
+app = FastAPI()
+
+@app.get("/", tags=["root"])
+async def read_root() -> dict:
+    return {"message": "running", "success": True}
+
+@app.post("/signup", tags=["user"])
+async def create_user(user: UserSignupSchema = Body(...), db: Session = Depends(get_db)):
+    # Check if user exists
+    db_user = db.query(User).filter(User.email == user.email).first()
+    if db_user:
+        return {
+            "message": "Email already registered",
+            "success": False
+        }
+    
+    hashed_password = hash_password(user.password)
+    # Create new user
+    db_user = User(
+        firstname=user.firstname,
+        lastname=user.lastname,
+        email=user.email,
+        password=hashed_password,
+        onboarded=user.onboarded
+    )
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    
+    token_response = sign_jwt({"user_id": db_user.id, "onboarded": db_user.onboarded})
+    return {**token_response, "success": True}
+
+@app.post("/login", tags=["user"])
+async def login_user(user: UserLoginSchema = Body(...), db: Session = Depends(get_db)):
+    db_user = db.query(User).filter(User.email == user.email).first()
+    if not db_user:
+        return {
+            "message": "Invalid credentials",
+            "success": False
+        }
+    if db_user.password != hash_password(user.password):
+        return {
+            "message": "Invalid credentials", 
+            "success": False
+        }
+    token_response = sign_jwt({"user_id": db_user.id, "onboarded": db_user.onboarded})
+    return {**token_response, "success": True}
+
+@app.get("/user/{user_id}", tags=["user"])
+async def get_user(user_id: int, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    if not current_user:
+        return {
+            "message": "Unauthorized",
+            "success": False
+        }
+    
+    db_user = db.query(User).filter(User.id == user_id).first()
+    if not db_user:
+        return {
+            "message": "User not found",
+            "success": False
+        }
+    return {
+        "data": db_user,
+        "success": True
+    }
