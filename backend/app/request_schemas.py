@@ -5,7 +5,7 @@ class UserSignupSchema(BaseModel):
     lastname: str = Field(..., description="The last name of the user")
     email: EmailStr = Field(..., description="The email address of the user")
     password: str = Field(..., description="The password of the user")
-    onboarded: bool = Field(default=False, description="Whether the user has onboarded")
+    interests: list[int] = Field(..., description="List of interest IDs")
 
     class Config:
         json_schema_extra = {
@@ -14,6 +14,7 @@ class UserSignupSchema(BaseModel):
                 "lastname": "doe",
                 "email": "john@doe.com",
                 "password": "password",
+                "interests": [1, 2, 3]
             }
         }
 
@@ -26,5 +27,14 @@ class UserLoginSchema(BaseModel):
             "example": {
                 "email": "john@doe.com",
                 "password": "password"
+            }
+        }
+class UserInterestsCreateUpdateSchema(BaseModel):
+    interest_ids: list[int] = Field(..., description="List of interest IDs")
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "interest_ids": [1, 2, 3]
             }
         }

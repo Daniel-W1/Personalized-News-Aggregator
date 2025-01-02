@@ -6,8 +6,7 @@ import jwt
 from decouple import config
 
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from fastapi import HTTPException, Security
-
+from fastapi import Security
 
 
 JWT_SECRET = config("secret")

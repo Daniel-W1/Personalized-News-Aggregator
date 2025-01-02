@@ -1,5 +1,7 @@
 from sqlalchemy import Boolean, Column, Integer, String
+from sqlalchemy.orm import relationship
 from app.database import Base
+from .interest import user_interests
 
 class User(Base):
     __tablename__ = "users"
@@ -10,3 +12,5 @@ class User(Base):
     email = Column(String, unique=True, index=True)
     password = Column(String)
     onboarded = Column(Boolean, default=False)
+
+    interests = relationship("Interest", secondary=user_interests, back_populates="users")

@@ -5,6 +5,9 @@ from app.request_schemas import UserSignupSchema, UserLoginSchema
 from app.database import get_db, engine
 from app.models.user import User
 from app.models import user as models
+from app.models.interest import Interest
+from app.request_schemas import UserInterestsCreateUpdateSchema
+from app.profile.profile_handler import create_user_profile
 
 # Create tables
 models.Base.metadata.create_all(bind=engine)
@@ -32,8 +35,11 @@ async def create_user(user: UserSignupSchema = Body(...), db: Session = Depends(
         lastname=user.lastname,
         email=user.email,
         password=hashed_password,
-        onboarded=user.onboarded
+        onboarded=False
     )
+
+    await create_user_profile(db_user.id, user.interests, db)
+
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -75,3 +81,49 @@ async def get_user(user_id: int, db: Session = Depends(get_db), current_user: di
         "data": db_user,
         "success": True
     }
+
+@app.get("/interests", tags=["interests"])
+async def get_interests(
+    db: Session = Depends(get_db)
+):
+    interests = db.query(Interest).all()
+    return {"data": interests, "success": True}
+
+@app.put("/users/me/interests", tags=["interests"])
+async def update_user_interests(
+    interests: UserInterestsCreateUpdateSchema = Body(...),
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    if not current_user:
+        return {"message": "Unauthorized", "success": False}
+    
+    user = db.query(User).filter(User.id == current_user["user_id"]).first()
+    if not user:
+        return {"message": "User not found", "success": False}
+    
+    # Clear existing interests
+    user.interests = []
+    
+    # Add new interests
+    for interest_id in interests.interest_ids:
+        interest = db.query(Interest).filter(Interest.id == interest_id).first()
+        if interest:
+            user.interests.append(interest)
+    
+    db.commit()
+    return {"message": "Interests updated successfully", "success": True}
+
+@app.get("/users/me/interests", tags=["user"])
+async def get_user_interests(
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    if not current_user:
+        return {"message": "Unauthorized", "success": False}
+    
+    user = db.query(User).filter(User.id == current_user["user_id"]).first()
+    if not user:
+        return {"message": "User not found", "success": False}
+    
+    return {"data": user.interests, "success": True}
