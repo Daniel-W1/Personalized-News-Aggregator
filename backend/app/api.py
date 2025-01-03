@@ -8,11 +8,19 @@ from app.models import user as models
 from app.models.interest import Interest
 from app.request_schemas import UserInterestsCreateUpdateSchema
 from app.profile.profile_handler import create_user_profile
+from app.aggregator.aggregation_job import aggregate_news
+import asyncio
+from contextlib import asynccontextmanager
 
 # Create tables
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    asyncio.create_task(aggregate_news())
+    yield
+
+app = FastAPI(lifespan=lifespan)
 
 @app.get("/", tags=["root"])
 async def read_root() -> dict:

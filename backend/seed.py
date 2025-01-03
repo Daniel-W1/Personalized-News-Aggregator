@@ -1,24 +1,26 @@
 from app.database import SessionLocal, engine
 from app.models.interest import Interest
+from app.models.news import News  # Add this import
 from app.models import user as models
+from app.models.user import Base  # Add this import
 
-# Create tables
-models.Base.metadata.create_all(bind=engine)
+# Drop all existing tables
+Base.metadata.drop_all(bind=engine)
+
+# Create all tables
+Base.metadata.create_all(bind=engine)
 
 def seed_interests():
     db = SessionLocal()
     try:
         interests = [
-            Interest(name="World News"),
-            Interest(name="Politics"), 
-            Interest(name="Business"),
-            Interest(name="Technology"),
-            Interest(name="Science"),
-            Interest(name="Health"),
-            Interest(name="Sports"),
-            Interest(name="Entertainment"),
-            Interest(name="Environment"),
-            Interest(name="Education")
+            Interest(name="general"),
+            Interest(name="business"), 
+            Interest(name="entertainment"),
+            Interest(name="health"),
+            Interest(name="science"),
+            Interest(name="technology"),
+            Interest(name="sports")
         ]
 
         # Add interests to database
