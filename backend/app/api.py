@@ -4,23 +4,18 @@ from app.auth.auth_handler import sign_jwt, hash_password, get_current_user
 from app.request_schemas import UserSignupSchema, UserLoginSchema
 from app.database import get_db, engine
 from app.models.user import User
+from app.models.news import News
 from app.models import user as models
 from app.models.interest import Interest
 from app.request_schemas import UserInterestsCreateUpdateSchema
 from app.profile.profile_handler import create_user_profile
-from app.aggregator.aggregation_job import aggregate_news
-import asyncio
-from contextlib import asynccontextmanager
+from app.langgraph.graph import create_news_processing_graph
+from decouple import config
 
 # Create tables
 models.Base.metadata.create_all(bind=engine)
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    asyncio.create_task(aggregate_news())
-    yield
-
-app = FastAPI(lifespan=lifespan)
+app = FastAPI()
 
 @app.get("/", tags=["root"])
 async def read_root() -> dict:
@@ -135,3 +130,70 @@ async def get_user_interests(
         return {"message": "User not found", "success": False}
     
     return {"data": user.interests, "success": True}
+
+@app.get("/news", tags=["news"])
+async def get_news(
+    category: str = "all",
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    if not current_user:
+        return {"message": "Unauthorized", "success": False}
+    
+    try:
+        # Initialize config for the graph
+        graph_config = {
+            "openai_api_key": config("openai_api_key"),
+            "model_name": "gpt-4o-mini",
+            "temperature": 0.2
+        }
+        
+        # Create the processing graph
+        graph = create_news_processing_graph(graph_config)
+        
+        if category == "all":
+            # Get all categories from seed.py
+            categories = db.query(Interest.name).distinct().all()
+            categories = [category[0] for category in categories]
+            
+            for cat in categories:
+                await graph.ainvoke({
+                    "category": cat
+                })
+            
+            # Get processed news from database
+            news_items = db.query(News).filter(
+                News.processing_status == "completed"
+            ).order_by(News.published_at.desc()).all()
+                        
+            return {
+                "data": news_items,
+                "count": len(news_items),
+                "success": True
+            }
+            
+        else:
+            # Process single category
+            await graph.ainvoke({
+                "category": category
+            })
+
+            # Get processed news from database for the category
+            news_items = db.query(News).filter(
+                News.category == category,
+                News.processing_status == "completed"
+            ).order_by(News.published_at.desc()).all()
+            
+            return {
+                "data": news_items,
+                "count": len(news_items),
+                "success": True
+            }
+            
+    except Exception as e:
+        print(f"Error processing news: {str(e)}")
+        return {
+            "message": "Error processing news",
+            "error": str(e),
+            "success": False
+        }
