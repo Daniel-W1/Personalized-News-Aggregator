@@ -1,6 +1,17 @@
 import uvicorn
 import signal
 import sys
+from fastapi.middleware.cors import CORSMiddleware
+from app.api import app
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["*"],
+)
 
 def handle_exit(signum, frame):
     print("\nShutting down gracefully...")

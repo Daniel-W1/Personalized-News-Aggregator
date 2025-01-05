@@ -30,7 +30,6 @@ async def create_user(user: UserSignupSchema = Body(...), db: Session = Depends(
             "message": "Email already registered",
             "success": False
         }
-    
     hashed_password = hash_password(user.password)
     # Create new user
     db_user = User(
