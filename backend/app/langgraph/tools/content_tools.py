@@ -22,12 +22,12 @@ class NewsAPITool:
             "limit": 2,
             "date_from": one_hour_ago.strftime("%Y-%m-%d,%H:%M"),
             "date_to": now.strftime("%Y-%m-%d,%H:%M"),
-            "sort": "published_desc"
+            "sort": "published_desc",
+            "sources": "en,-de"
         }
         
         try:
             response = requests.get(url, params=params)
-            print(f"MediaStack response: {response.json()}")
             if response.status_code == 200:
                 data = response.json()
                 return [{
@@ -61,7 +61,6 @@ class NewsAPITool:
         
         try:
             response = requests.get(url, params=params)
-            print(f"NewsAPI response: {response.json()}, category: {category}")
             if response.status_code == 200:
                 data = response.json()
                 return [{
@@ -84,9 +83,6 @@ class NewsAPITool:
 
         mediastack_news = self.fetch_from_mediastack(category)
         newsapi_news = self.fetch_from_newsapi(category)
-
-        print(f"Mediastack news: {len(mediastack_news)}")
-        print(f"NewsAPI news: {len(newsapi_news)}")
         
         # Combine results and remove duplicates based on URL
         seen_urls = set()

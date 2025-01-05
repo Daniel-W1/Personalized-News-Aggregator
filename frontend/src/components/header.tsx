@@ -12,9 +12,16 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Settings, LogOut } from 'lucide-react'
 import EditInterestsDialog from '@/components/edit-interests'
+import { useRouter } from 'next/navigation'
 
 export default function Header() {
     const [isEditInterestsOpen, setIsEditInterestsOpen] = useState(false)
+    const router = useRouter()
+
+    const handleLogout = () => {
+        localStorage.removeItem('token')
+        router.push('/')
+    }
 
     return (
         <header className="bg-gray-800 py-4">
@@ -42,7 +49,7 @@ export default function Header() {
                                 <Settings className="mr-2 h-4 w-4" />
                                 <span>Edit Interests</span>
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onClick={handleLogout}>
                                 <LogOut className="mr-2 h-4 w-4" />
                                 <span>Log out</span>
                             </DropdownMenuItem>

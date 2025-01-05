@@ -3,16 +3,21 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 from datetime import datetime
 
-SENTIMENT_PROMPT = """Analyze the sentiment of the following news article. Consider:
-1. Overall tone (positive, negative, neutral)
+SENTIMENT_PROMPT = """Analyze the sentiment of the following news article. Your analysis should:
+1. Determine the overall tone (positive, negative, neutral) based on the emotional weight and implications of the content.
+   - Classify as **positive** if the article highlights beneficial developments, optimistic outlooks, or favorable outcomes.
+   - Classify as **negative** if the article focuses on adverse events, pessimistic perspectives, or harmful consequences.
+   - Classify as **neutral** if the article is factual, balanced, or lacks strong emotional language.
+2. Consider the context, language, and implications of the title and description to guide your classification.
 
 Title: {title}
 Description: {description}
 
 Provide the analysis in the following JSON format:
-{{
+{
     "sentiment": "positive/negative/neutral"
-}}"""
+}
+"""
 
 class SentimentAnalyzerAgent:
     def __init__(self, config: Dict[str, Any]):
