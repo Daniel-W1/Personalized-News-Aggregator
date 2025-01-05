@@ -46,8 +46,8 @@ async def create_user(user: UserSignupSchema = Body(...), db: Session = Depends(
     db.commit()
     db.refresh(db_user)
     
-    token_response = sign_jwt({"user_id": db_user.id, "onboarded": db_user.onboarded})
-    return {**token_response, "success": True}
+    token_response = sign_jwt({"user_id": db_user.id })
+    return {**token_response, "user": db_user, "success": True}
 
 @app.post("/login", tags=["user"])
 async def login_user(user: UserLoginSchema = Body(...), db: Session = Depends(get_db)):
@@ -62,8 +62,8 @@ async def login_user(user: UserLoginSchema = Body(...), db: Session = Depends(ge
             "message": "Invalid credentials", 
             "success": False
         }
-    token_response = sign_jwt({"user_id": db_user.id, "onboarded": db_user.onboarded})
-    return {**token_response, "success": True}
+    token_response = sign_jwt({"user_id": db_user.id })
+    return {**token_response, "user": db_user, "success": True}
 
 @app.get("/user/{user_id}", tags=["user"])
 async def get_user(user_id: int, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):

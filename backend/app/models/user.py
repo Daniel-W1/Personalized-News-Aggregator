@@ -11,6 +11,5 @@ class User(Base):
     lastname = Column(String)
     email = Column(String, unique=True, index=True)
     password = Column(String)
-    onboarded = Column(Boolean, default=False)
 
     interests = relationship("Interest", secondary=user_interests, back_populates="users")
