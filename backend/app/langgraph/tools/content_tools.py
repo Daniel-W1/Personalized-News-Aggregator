@@ -24,7 +24,7 @@ class NewsAPITool:
         
         try:
             response = requests.get(url, params=params)
-            print(f"MediaStack response: {response.json()}")
+            print(f"MediaStack response: {len(response.json()['data'])}")
 
             if response.status_code == 200:
                 data = response.json()
@@ -55,7 +55,7 @@ class NewsAPITool:
         
         try:
             response = requests.get(url, params=params)
-            print(f"NewsAPI response: {response.json()}")
+            print(f"NewsAPI response: {len(response.json()['articles'])}")
 
             if response.status_code == 200:
                 data = response.json()

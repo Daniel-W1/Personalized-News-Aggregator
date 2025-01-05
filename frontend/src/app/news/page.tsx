@@ -5,6 +5,7 @@ import axios from 'axios'
 import Header from '@/components/header'
 import CategorySelector from '@/components/category-select'
 import NewsFeed from '@/app/news/components/feed'
+import { useRouter } from 'next/navigation'
 
 export default function NewsPage() {
   const [selectedCategory, setSelectedCategory] = useState('')
@@ -12,11 +13,17 @@ export default function NewsPage() {
   const [news, setNews] = useState([])
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
+  const router = useRouter()
 
   useEffect(() => {
     const fetchUserInterests = async () => {
       try {
         const token = localStorage.getItem('token')
+
+        if (!token){
+            router.push("/")
+            return
+        }
         const response = await axios.get('http://localhost:8081/users/me/interests', {
           headers: {
             Authorization: `Bearer ${token}`
@@ -30,15 +37,27 @@ export default function NewsPage() {
           if (userInterests.length > 0) {
             setSelectedCategory(userInterests[0])
           }
+        } else {
+          setError(response.data.message || 'Failed to fetch interests')
+          if (response.data.message === "Unauthorized") {
+            router.push('/')
+            return
+          }
         }
-      } catch (err) {
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (err: any) {
+        if (err.response?.status === 401) {
+          router.push('/')
+          return
+        }
         setError('Failed to load interests')
         console.error('Error fetching interests:', err)
       }
     }
 
     fetchUserInterests()
-  }, [])
+  }, [router])
 
   useEffect(() => {
     const fetchNews = async () => {

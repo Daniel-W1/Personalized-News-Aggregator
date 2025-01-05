@@ -129,7 +129,6 @@ async def get_user_interests(
     if not user:
         return {"message": "User not found", "success": False}
     
-    print(user.interests)
     return {"data": user.interests, "success": True}
 
 @app.get("/news", tags=["news"])
