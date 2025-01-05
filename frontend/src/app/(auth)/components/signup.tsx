@@ -1,6 +1,5 @@
 'use client'
-
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -10,38 +9,45 @@ import { Mail, Lock, User, ChevronRight, ChevronLeft, Plus, X } from 'lucide-rea
 import axios from 'axios'
 import { useRouter } from 'next/navigation'
 
-const interests = [
-  "general",
-  "business", 
-  "entertainment",
-  "health",
-  "science",
-  "technology",
-  "sports"
-]
-
 export default function SignupForm() {
   const router = useRouter()
   const [step, setStep] = useState(1)
   const [error, setError] = useState('')
+  const [interests, setInterests] = useState<Array<{id: number, name: string}>>([])
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     firstname: '',
     lastname: '',
-    interests: [] as string[]
+    interests: [] as number[]
   })
+
+  useEffect(() => {
+    const fetchInterests = async () => {
+      try {
+        const response = await axios.get('http://localhost:8081/interests')
+        if (response.data.success) {
+          setInterests(response.data.data)
+        }
+      } catch (err) {
+        console.error('Error fetching interests:', err)
+        setError('Failed to load interests')
+      }
+    }
+
+    fetchInterests()
+  }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
-  const handleInterestChange = (interest: string) => {
+  const handleInterestChange = (interest: {id: number, name: string}) => {
     setFormData(prev => ({
       ...prev,
-      interests: prev.interests.includes(interest)
-        ? prev.interests.filter(i => i !== interest)
-        : [...prev.interests, interest]
+      interests: prev.interests.includes(interest.id)
+        ? prev.interests.filter(i => i !== interest.id)
+        : [...prev.interests, interest.id]
     }))
   }
 
@@ -49,13 +55,18 @@ export default function SignupForm() {
     e.preventDefault()
     setError('')
 
+    if (formData.interests.length === 0) {
+      setError('Please select at least one interest category')
+      return
+    }
+
     try {
       const response = await axios.post('http://localhost:8081/signup', {
         email: formData.email,
         password: formData.password,
         firstname: formData.firstname,
         lastname: formData.lastname,
-        interests: formData.interests.map(interest => interests.indexOf(interest) + 1)
+        interests: formData.interests
       })
 
       if (response.data.success) {
@@ -157,31 +168,33 @@ export default function SignupForm() {
           <div className="space-y-4">
             <Label className="text-gray-300">Select your interests</Label>
             <div className="flex flex-wrap gap-2">
-              {formData.interests.map((interest) => (
-                <Badge 
-                  key={interest}
-                  variant="secondary"
-                  className="bg-blue-600 hover:bg-blue-700 cursor-pointer flex items-center gap-1"
-                  onClick={() => handleInterestChange(interest)}
-                >
-                  {interest.charAt(0).toUpperCase() + interest.slice(1)}
-                  <X size={14} />
-                </Badge>
-              ))}
+              {interests
+                .filter(interest => formData.interests.includes(interest.id))
+                .map((interest) => (
+                  <Badge 
+                    key={interest.id}
+                    variant="secondary"
+                    className="bg-blue-600 hover:bg-blue-700 cursor-pointer flex items-center gap-1"
+                    onClick={() => handleInterestChange(interest)}
+                  >
+                    {interest.name.charAt(0).toUpperCase() + interest.name.slice(1)}
+                    <X size={14} />
+                  </Badge>
+                ))}
             </div>
             <Card className="p-4 bg-gray-800 border-gray-700">
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                 {interests
-                  .filter(interest => !formData.interests.includes(interest))
+                  .filter(interest => !formData.interests.includes(interest.id))
                   .map((interest) => (
                     <Button
-                      key={interest}
+                      key={interest.id}
                       variant="ghost"
                       className="justify-center text-gray-300 hover:text-white hover:bg-gray-700"
                       onClick={() => handleInterestChange(interest)}
                     >
                       <Plus size={16} className="mr-1" />
-                      {interest.charAt(0).toUpperCase() + interest.slice(1)}
+                      {interest.name.charAt(0).toUpperCase() + interest.name.slice(1)}
                     </Button>
                   ))}
               </div>
