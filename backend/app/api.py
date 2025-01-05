@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Body, Depends
+from fastapi import FastAPI, Body, Depends, Request
 from sqlalchemy.orm import Session
 from app.auth.auth_handler import sign_jwt, hash_password, get_current_user
 from app.request_schemas import UserSignupSchema, UserLoginSchema
@@ -11,11 +11,13 @@ from app.request_schemas import UserInterestsCreateUpdateSchema
 from app.profile.profile_handler import create_user_profile
 from app.langgraph.graph import create_news_processing_graph
 from decouple import config
+from app.utils.cache import TTLCache
 
 # Create tables
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+app.state.news_cache = TTLCache()
 
 @app.get("/", tags=["root"])
 async def read_root() -> dict:
@@ -132,6 +134,7 @@ async def get_user_interests(
 
 @app.get("/news", tags=["news"])
 async def get_news(
+    request: Request,
     category: str = "all",
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_user)
@@ -140,6 +143,12 @@ async def get_news(
         return {"message": "Unauthorized", "success": False}
     
     try:
+        cache_key = f"news_{current_user['user_id']}_{category}"
+
+        cached_result = request.app.state.news_cache.get(cache_key)
+        if cached_result is not None:
+            return cached_result
+
         # Initialize config for the graph
         graph_config = {
             "openai_api_key": config("openai_api_key"),
@@ -173,15 +182,21 @@ async def get_news(
             
         else:
             # Process single category
-            # await graph.ainvoke({
-            #     "category": category
-            # })
+            await graph.ainvoke({
+                "category": category
+            })
 
             # Get processed news from database for the category
             news_items = db.query(News).filter(
                 News.category == category,
                 News.processing_status == "completed"
             ).order_by(News.published_at.desc()).all()
+
+            request.app.state.news_cache.set(cache_key, {
+                "data": news_items,
+                "count": len(news_items),
+                "success": True
+            })
             
             return {
                 "data": news_items,
