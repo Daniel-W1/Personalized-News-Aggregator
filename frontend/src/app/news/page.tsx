@@ -124,7 +124,7 @@ export default function NewsPage() {
     }, [selectedCategory, router])
 
     return (
-        <div className="min-h-screen bg-gray-900 text-white">
+        <div className="min-h-screen bg-background text-foreground">
             <Header />
             <main className="container mx-auto px-4 py-8">
                 <CategorySelector
@@ -133,7 +133,7 @@ export default function NewsPage() {
                     onSelectCategory={setSelectedCategory}
                 />
                 {error && (
-                    <div className="p-3 mb-4 text-sm text-red-500 bg-red-100 rounded">
+                    <div className="p-3 mb-4 text-sm text-destructive bg-destructive/10 rounded">
                         {error}
                     </div>
                 )}

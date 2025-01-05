@@ -20,16 +20,24 @@ export default function CategorySelector({
           key={category}
           variant={"ghost"}
           onClick={() => onSelectCategory(category)}
-          className={cn("text-sm capitalize hover:bg-blue-500 hover:text-white", selectedCategory === category && "bg-blue-500 text-white")}
+          className={cn(
+            "text-sm capitalize hover:bg-primary hover:text-primary-foreground",
+            selectedCategory === category && "bg-primary text-primary-foreground"
+          )}
         >
           {category}
         </Button>
       ))}
 
-      <Button variant={"ghost"}
-        className={cn("text-sm capitalize hover:bg-blue-500 hover:text-white", selectedCategory === "bookmarks" && "bg-blue-500 text-white")}
-        onClick={() => onSelectCategory("bookmarks")}>
-        Bookmarks <BookmarkCheck />
+      <Button 
+        variant={"ghost"}
+        className={cn(
+          "text-sm capitalize hover:bg-primary hover:text-primary-foreground",
+          selectedCategory === "bookmarks" && "bg-primary text-primary-foreground"
+        )}
+        onClick={() => onSelectCategory("bookmarks")}
+      >
+        Bookmarks <BookmarkCheck className="ml-2" />
       </Button>
     </div>
   )

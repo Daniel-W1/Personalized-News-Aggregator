@@ -59,19 +59,19 @@ export default function NewsFeed({ news, bookmarks, setBookmarks }: NewsFeedProp
                 {news.map((item) => (
                     <Card
                         key={item.id}
-                        className="bg-gray-800 border-gray-700 hover:bg-gray-700/50 transition-all duration-300 hover:scale-[1.02] cursor-pointer overflow-hidden group flex flex-col relative"
+                        className="bg-card border-border hover:bg-accent/50 transition-all duration-300 hover:scale-[1.02] cursor-pointer overflow-hidden group flex flex-col relative"
                     >
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();
                                 toggleBookmark(item.id);
                             }}
-                            className="absolute top-2 right-2 z-10 p-2 rounded-full bg-gray-900/80 backdrop-blur-sm hover:bg-gray-700 transition-colors"
+                            className="absolute top-2 right-2 z-10 p-2 rounded-full bg-background/80 backdrop-blur-sm hover:bg-accent transition-colors"
                         >
                             {bookmarks.has(item.id) ? (
-                                <BookmarkCheck className="w-5 h-5 text-blue-400" />
+                                <BookmarkCheck className="w-5 h-5 text-primary" />
                             ) : (
-                                <Bookmark className="w-5 h-5 text-gray-400 hover:text-blue-400" />
+                                <Bookmark className="w-5 h-5 text-muted-foreground hover:text-primary" />
                             )}
                         </button>
                         <div className="flex-none">
@@ -83,35 +83,36 @@ export default function NewsFeed({ news, bookmarks, setBookmarks }: NewsFeedProp
                                         fill
                                         className="object-cover group-hover:scale-110 transition-transform duration-500"
                                     />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent" />
-                                    <span className="absolute bottom-2 right-2 px-2 py-1 rounded bg-gray-900/80 text-xs text-gray-300 backdrop-blur-sm">
+                                    <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
+                                    <span className="absolute bottom-2 right-2 px-2 py-1 rounded bg-background/80 text-xs text-foreground backdrop-blur-sm">
                                         {item.source}
                                     </span>
                                 </div>
                             ) : (
                                 <div className="px-6 pt-6">
-                                    <span className="px-2 py-1 rounded bg-gray-900/80 text-xs text-gray-300">
+                                    <span className="px-2 py-1 rounded bg-background/80 text-xs text-foreground">
                                         {item.source}
                                     </span>
                                 </div>
                             )}
                         </div>
                         <CardHeader className="flex-1 flex flex-col">
-                            <div className="flex items-center gap-2 text-sm text-gray-400 mb-2">
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                                 <time dateTime={item.published_at}>
                                     {new Date(item.published_at).toLocaleDateString()}
                                 </time>
-                                <span className={`ml-auto px-2 py-1 rounded text-xs ${item.sentiment === 'positive' ? 'bg-green-900/50 text-green-300' :
-                                        item.sentiment === 'negative' ? 'bg-red-900/50 text-red-300' :
-                                            'bg-blue-900/50 text-blue-300'
-                                    }`}>
+                                <span className={`ml-auto px-2 py-1 rounded text-xs ${
+                                    item.sentiment === 'positive' ? 'bg-green-500/20 text-green-600 dark:text-green-400' :
+                                    item.sentiment === 'negative' ? 'bg-red-500/20 text-red-600 dark:text-red-400' :
+                                    'bg-blue-500/20 text-blue-600 dark:text-blue-400'
+                                }`}>
                                     {item.sentiment}
                                 </span>
                             </div>
-                            <CardTitle className="text-blue-400 hover:text-blue-300 transition-colors mb-4">
+                            <CardTitle className="text-primary hover:text-primary/80 transition-colors mb-4">
                                 {item.title}
                             </CardTitle>
-                            <CardDescription className="text-gray-300 line-clamp-4 mb-4 flex-1">
+                            <CardDescription className="text-foreground line-clamp-4 mb-4 flex-1">
                                 {item.summary}
                             </CardDescription>
                             <div className="flex items-center justify-between mt-auto">
@@ -119,13 +120,13 @@ export default function NewsFeed({ news, bookmarks, setBookmarks }: NewsFeedProp
                                     href={item.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors text-sm"
+                                    className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors text-sm"
                                 >
                                     Read full article <ExternalLink size={16} />
                                 </a>
                                 <button
                                     onClick={() => setSelectedArticle(item)}
-                                    className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors text-sm"
+                                    className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors text-sm"
                                 >
                                     View all <Maximize2 size={16} />
                                 </button>
@@ -136,20 +137,21 @@ export default function NewsFeed({ news, bookmarks, setBookmarks }: NewsFeedProp
             </div>
 
             <Dialog open={!!selectedArticle} onOpenChange={() => setSelectedArticle(null)}>
-                <DialogContent className="bg-gray-800 text-gray-100 border-gray-700 max-w-3xl max-h-[80vh] overflow-y-auto">
+                <DialogContent className="bg-background text-foreground border-border max-w-3xl max-h-[80vh] overflow-y-auto">
                     {selectedArticle && (
                         <>
                             <DialogHeader>
-                                <DialogTitle className="text-xl text-blue-400 mb-4">{selectedArticle.title}</DialogTitle>
-                                <div className="flex items-center gap-4 text-sm text-gray-400">
+                                <DialogTitle className="text-xl text-primary mb-4">{selectedArticle.title}</DialogTitle>
+                                <div className="flex items-center gap-4 text-sm text-muted-foreground">
                                     <span>{selectedArticle.source}</span>
                                     <time dateTime={selectedArticle.published_at}>
                                         {new Date(selectedArticle.published_at).toLocaleDateString()}
                                     </time>
-                                    <span className={`px-2 py-1 rounded text-xs ${selectedArticle.sentiment === 'positive' ? 'bg-green-900/50 text-green-300' :
-                                            selectedArticle.sentiment === 'negative' ? 'bg-red-900/50 text-red-300' :
-                                                'bg-blue-900/50 text-blue-300'
-                                        }`}>
+                                    <span className={`px-2 py-1 rounded text-xs ${
+                                        selectedArticle.sentiment === 'positive' ? 'bg-green-500/20 text-green-600 dark:text-green-400' :
+                                        selectedArticle.sentiment === 'negative' ? 'bg-red-500/20 text-red-600 dark:text-red-400' :
+                                        'bg-blue-500/20 text-blue-600 dark:text-blue-400'
+                                    }`}>
                                         {selectedArticle.sentiment}
                                     </span>
                                 </div>
@@ -167,7 +169,7 @@ export default function NewsFeed({ news, bookmarks, setBookmarks }: NewsFeedProp
                                 </div>
                             )}
 
-                            <div className="text-gray-300 whitespace-pre-wrap">
+                            <div className="text-foreground whitespace-pre-wrap">
                                 {selectedArticle.summary}
                             </div>
 
@@ -176,7 +178,7 @@ export default function NewsFeed({ news, bookmarks, setBookmarks }: NewsFeedProp
                                     href={selectedArticle.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors"
+                                    className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors"
                                 >
                                     Read full article <ExternalLink size={16} />
                                 </a>

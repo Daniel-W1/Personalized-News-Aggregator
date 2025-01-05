@@ -13,6 +13,7 @@ import {
 import { Settings, LogOut } from 'lucide-react'
 import EditInterestsDialog from '@/components/edit-interests'
 import { useRouter } from 'next/navigation'
+import { ModeToggle } from './theme-dropdown'
 
 export default function Header() {
     const [isEditInterestsOpen, setIsEditInterestsOpen] = useState(false)
@@ -26,15 +27,16 @@ export default function Header() {
     }
 
     return (
-        <header className="bg-gray-800 py-4">
-            <div className="container mx-auto px-4 flex justify-between items-center">
+        <header className="border-b bg-background">
+            <div className="container mx-auto px-4 py-4 flex justify-between items-center">
                 <h1 className="text-2xl font-bold text-blue-500">FutureNews</h1>
                 <div className="flex items-center space-x-4">
+                    <ModeToggle />
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Avatar className="h-8 w-8 cursor-pointer">
                                 <AvatarImage src="/avatars/01.png" alt="@username" />
-                                <AvatarFallback className="text-black grid place-items-center">{user?.firstname[0] + user?.lastname[0]}</AvatarFallback>
+                                <AvatarFallback className="grid place-items-center">{user?.firstname[0] + user?.lastname[0]}</AvatarFallback>
                             </Avatar>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="w-56" align="end" forceMount>
