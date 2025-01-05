@@ -5,18 +5,15 @@ from datetime import datetime
 
 SENTIMENT_PROMPT = """Analyze the sentiment of the following news article. Your analysis should:
 1. Determine the overall tone (positive, negative, neutral) based on the emotional weight and implications of the content.
-   - Classify as **positive** if the article highlights beneficial developments, optimistic outlooks, or favorable outcomes.
-   - Classify as **negative** if the article focuses on adverse events, pessimistic perspectives, or harmful consequences.
-   - Classify as **neutral** if the article is factual, balanced, or lacks strong emotional language.
 2. Consider the context, language, and implications of the title and description to guide your classification.
 
 Title: {title}
 Description: {description}
 
 Provide the analysis in the following JSON format:
-{
+{{
     "sentiment": "positive/negative/neutral"
-}
+}}
 """
 
 class SentimentAnalyzerAgent:
@@ -38,13 +35,22 @@ class SentimentAnalyzerAgent:
             )
             
             response = await self.llm.ainvoke(messages)
+
+            # Clean the response by removing markdown code block syntax
+            cleaned_response = response.content
+            if cleaned_response.startswith("```"):
+                # Remove the first line (```json) and last line (```)
+                cleaned_response = "\n".join(cleaned_response.split("\n")[1:-1])
             
-            # Add sentiment analysis to the article
+            # Parse the JSON response
+            import json
+            sentiment_data = json.loads(cleaned_response)
+            
             return {
                 **article,
-                "sentiment": response.content
+                "sentiment": sentiment_data["sentiment"]
             }
-            
+
         except Exception as e:
             print(f"Error analyzing article sentiment: {str(e)}")
             return {

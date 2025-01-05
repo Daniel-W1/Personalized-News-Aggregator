@@ -12,22 +12,20 @@ class NewsAPITool:
 
     def fetch_from_mediastack(self, category: str) -> List[Dict[str, Any]]:
         """Fetch news from MediaStack API for a given category"""
-        now = datetime.now()
-        one_hour_ago = now - timedelta(hours=1)
-        
+
         url = "http://api.mediastack.com/v1/news"
         params = {
             "access_key": self.mediastack_api_key,
             "categories": category,
             "limit": 2,
-            "date_from": one_hour_ago.strftime("%Y-%m-%d,%H:%M"),
-            "date_to": now.strftime("%Y-%m-%d,%H:%M"),
             "sort": "published_desc",
             "sources": "en,-de"
         }
         
         try:
             response = requests.get(url, params=params)
+            print(f"MediaStack response: {response.json()}")
+
             if response.status_code == 200:
                 data = response.json()
                 return [{
@@ -45,22 +43,20 @@ class NewsAPITool:
             return []
 
     def fetch_from_newsapi(self, category: str) -> List[Dict[str, Any]]:
-        """Fetch news from NewsAPI for a given category"""
-        now = datetime.now()
-        one_hour_ago = now - timedelta(hours=1)
-        
+        """Fetch news from NewsAPI for a given category"""   
+     
         url = "https://newsapi.org/v2/everything"
         params = {
             "apiKey": self.news_api_key,
             "q": category,
             "pageSize": 2,
-            "from": one_hour_ago.isoformat(),
-            "to": now.isoformat(),
             "sortBy": "publishedAt"
         }
         
         try:
             response = requests.get(url, params=params)
+            print(f"NewsAPI response: {response.json()}")
+
             if response.status_code == 200:
                 data = response.json()
                 return [{

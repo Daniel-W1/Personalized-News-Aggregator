@@ -173,9 +173,9 @@ async def get_news(
             
         else:
             # Process single category
-            # await graph.ainvoke({
-            #     "category": category
-            # })
+            await graph.ainvoke({
+                "category": category
+            })
 
             # Get processed news from database for the category
             news_items = db.query(News).filter(
