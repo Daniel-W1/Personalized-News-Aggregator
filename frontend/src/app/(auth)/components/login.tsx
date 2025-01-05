@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Mail, Lock } from 'lucide-react'
 import axios from 'axios'
 import { useRouter } from 'next/navigation'
+import { API_URL } from '@/lib/utils'
 
 export default function LoginForm() {
   const router = useRouter()
@@ -25,7 +26,7 @@ export default function LoginForm() {
     setError('')
 
     try {
-      const response = await axios.post('http://localhost:8081/login', {
+      const response = await axios.post(`${API_URL}/login`, {
         email: formData.email,
         password: formData.password
       })
@@ -47,14 +48,14 @@ export default function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
-        <div className="p-3 text-sm text-red-500 bg-red-100 rounded">
+        <div className="p-3 text-sm text-destructive bg-destructive/10 rounded">
           {error}
         </div>
       )}
       <div className="space-y-2">
-        <Label htmlFor="email" className="text-gray-300">Email</Label>
+        <Label htmlFor="email">Email</Label>
         <div className="relative">
-          <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" size={18} />
+          <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
           <Input
             id="email"
             name="email"
@@ -62,15 +63,15 @@ export default function LoginForm() {
             placeholder="Enter your email"
             value={formData.email}
             onChange={handleChange}
-            className="pl-10 bg-gray-800 border-gray-700 text-white"
+            className="pl-10"
             required
           />
         </div>
       </div>
       <div className="space-y-2">
-        <Label htmlFor="password" className="text-gray-300">Password</Label>
+        <Label htmlFor="password">Password</Label>
         <div className="relative">
-          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" size={18} />
+          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
           <Input
             id="password"
             name="password"
@@ -78,12 +79,12 @@ export default function LoginForm() {
             placeholder="Enter your password"
             value={formData.password}
             onChange={handleChange}
-            className="pl-10 bg-gray-800 border-gray-700 text-white"
+            className="pl-10"
             required
           />
         </div>
       </div>
-      <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
+      <Button type="submit" className="w-full">
         Log In
       </Button>
     </form>

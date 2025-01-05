@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card"
 import { Mail, Lock, User, ChevronRight, ChevronLeft, Plus, X } from 'lucide-react'
 import axios from 'axios'
 import { useRouter } from 'next/navigation'
+import { API_URL } from '@/lib/utils'
 
 export default function SignupForm() {
   const router = useRouter()
@@ -25,8 +26,8 @@ export default function SignupForm() {
   useEffect(() => {
     const fetchInterests = async () => {
       try {
-        const response = await axios.get('http://localhost:8081/interests')
-        if (response.data.success) {
+        const response = await axios.get(`${API_URL}/interests`)
+        if (response.data.success) {    
           setInterests(response.data.data)
         }
       } catch (err) {
@@ -61,7 +62,7 @@ export default function SignupForm() {
     }
 
     try {
-      const response = await axios.post('http://localhost:8081/signup', {
+      const response = await axios.post(`${API_URL}/signup`, {
         email: formData.email,
         password: formData.password,
         firstname: formData.firstname,
@@ -86,7 +87,7 @@ export default function SignupForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
-        <div className="p-3 text-sm text-red-500 bg-red-100 rounded">
+        <div className="p-3 text-sm text-destructive bg-destructive/10 rounded">
           {error}
         </div>
       )}
@@ -94,9 +95,9 @@ export default function SignupForm() {
       {step === 1 && (
         <>
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-gray-300">Email</Label>
+            <Label htmlFor="email">Email</Label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" size={18} />
+              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
               <Input
                 id="email"
                 name="email"
@@ -104,15 +105,15 @@ export default function SignupForm() {
                 placeholder="Enter your email"
                 value={formData.email}
                 onChange={handleChange}
-                className="pl-10 bg-gray-800 border-gray-700 text-white"
+                className="pl-10"
                 required
               />
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-gray-300">Password</Label>
+            <Label htmlFor="password">Password</Label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" size={18} />
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
               <Input
                 id="password"
                 name="password"
@@ -120,15 +121,15 @@ export default function SignupForm() {
                 placeholder="Create a password"
                 value={formData.password}
                 onChange={handleChange}
-                className="pl-10 bg-gray-800 border-gray-700 text-white"
+                className="pl-10"
                 required
               />
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="firstname" className="text-gray-300">First Name</Label>
+            <Label htmlFor="firstname">First Name</Label>
             <div className="relative">
-              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" size={18} />
+              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
               <Input
                 id="firstname"
                 name="firstname"
@@ -136,15 +137,15 @@ export default function SignupForm() {
                 placeholder="Enter your first name"
                 value={formData.firstname}
                 onChange={handleChange}
-                className="pl-10 bg-gray-800 border-gray-700 text-white"
+                className="pl-10"
                 required
               />
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="lastname" className="text-gray-300">Last Name</Label>
+            <Label htmlFor="lastname">Last Name</Label>
             <div className="relative">
-              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" size={18} />
+              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
               <Input
                 id="lastname"
                 name="lastname"
@@ -152,12 +153,12 @@ export default function SignupForm() {
                 placeholder="Enter your last name"
                 value={formData.lastname}
                 onChange={handleChange}
-                className="pl-10 bg-gray-800 border-gray-700 text-white"
+                className="pl-10"
                 required
               />
             </div>
           </div>
-          <Button type="button" onClick={() => setStep(2)} className="w-full bg-blue-600 hover:bg-blue-700">
+          <Button type="button" onClick={() => setStep(2)} className="w-full">
             Next <ChevronRight className="ml-2" size={16} />
           </Button>
         </>
@@ -166,7 +167,7 @@ export default function SignupForm() {
       {step === 2 && (
         <>
           <div className="space-y-4">
-            <Label className="text-gray-300">Select your interests</Label>
+            <Label>Select your interests</Label>
             <div className="flex flex-wrap gap-2">
               {interests
                 .filter(interest => formData.interests.includes(interest.id))
@@ -174,7 +175,7 @@ export default function SignupForm() {
                   <Badge 
                     key={interest.id}
                     variant="secondary"
-                    className="bg-blue-600 hover:bg-blue-700 cursor-pointer flex items-center gap-1"
+                    className="cursor-pointer flex items-center gap-1"
                     onClick={() => handleInterestChange(interest)}
                   >
                     {interest.name.charAt(0).toUpperCase() + interest.name.slice(1)}
@@ -182,7 +183,7 @@ export default function SignupForm() {
                   </Badge>
                 ))}
             </div>
-            <Card className="p-4 bg-gray-800 border-gray-700">
+            <Card className="p-4">
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                 {interests
                   .filter(interest => !formData.interests.includes(interest.id))
@@ -190,7 +191,7 @@ export default function SignupForm() {
                     <Button
                       key={interest.id}
                       variant="ghost"
-                      className="justify-center text-gray-300 hover:text-white hover:bg-gray-700"
+                      className="justify-center"
                       onClick={() => handleInterestChange(interest)}
                     >
                       <Plus size={16} className="mr-1" />
@@ -201,10 +202,10 @@ export default function SignupForm() {
             </Card>
           </div>
           <div className="flex space-x-4">
-            <Button type="button" onClick={() => setStep(1)} className="w-1/2 bg-gray-700 hover:bg-gray-600">
+            <Button type="button" onClick={() => setStep(1)} variant="outline" className="w-1/2">
               <ChevronLeft className="mr-2" size={16} /> Back
             </Button>
-            <Button type="submit" className="w-1/2 bg-blue-600 hover:bg-blue-700">
+            <Button type="submit" className="w-1/2">
               Sign Up
             </Button>
           </div>

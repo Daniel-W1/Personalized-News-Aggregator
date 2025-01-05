@@ -18,18 +18,18 @@ export default function AuthPage() {
   }, [router])
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <h1 className="text-4xl font-bold mb-2 text-blue-500">FutureNews</h1>
-          <p className="text-xl text-gray-400">Stay ahead with AI-powered summaries</p>
+          <h1 className="text-4xl font-bold mb-2 text-primary">FutureNews</h1>
+          <p className="text-xl text-muted-foreground">Stay ahead with AI-powered summaries</p>
         </div>
         {isLogin ? <LoginForm /> : <SignupForm />}
         <div className="text-center">
           <Button
             variant="link"
             onClick={() => setIsLogin(!isLogin)}
-            className="text-blue-400 hover:text-blue-300"
+            className="text-primary hover:text-primary/80"
           >
             {isLogin ? "Need an account? Sign up" : "Already have an account? Log in"}
           </Button>

@@ -6,6 +6,7 @@ import Header from '@/components/header'
 import CategorySelector from '@/components/category-select'
 import NewsFeed from '@/app/news/components/feed'
 import { useRouter } from 'next/navigation'
+import { API_URL } from '@/lib/utils'
 
 export default function NewsPage() {
     const [selectedCategory, setSelectedCategory] = useState('')
@@ -21,7 +22,7 @@ export default function NewsPage() {
             try {
                 const token = localStorage.getItem('token')
 
-                const response = await axios.get('http://localhost:8081/bookmarks', {
+                const response = await axios.get(`${API_URL}/bookmarks`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -46,7 +47,7 @@ export default function NewsPage() {
                     router.push("/")
                     return
                 }
-                const response = await axios.get('http://localhost:8081/users/me/interests', {
+                const response = await axios.get(`${API_URL}/users/me/interests`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -92,8 +93,8 @@ export default function NewsPage() {
 
                 const response = await axios.get(
                     selectedCategory === "bookmarks" 
-                        ? 'http://localhost:8081/bookmarks'
-                        : `http://localhost:8081/news?category=${selectedCategory}`,
+                        ? `${API_URL}/bookmarks`
+                        : `${API_URL}/news?category=${selectedCategory}`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`

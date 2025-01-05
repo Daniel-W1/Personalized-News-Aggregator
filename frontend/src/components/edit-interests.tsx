@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { Plus, X } from 'lucide-react'
 import axios from 'axios'
+import { API_URL } from '@/lib/utils'
 
 interface EditInterestsDialogProps {
     isOpen: boolean
@@ -30,7 +31,7 @@ export default function EditInterestsDialog({ isOpen, onClose }: EditInterestsDi
         const fetchUserInterests = async () => {
             try {
                 const token = localStorage.getItem('token')
-                const response = await axios.get('http://localhost:8081/users/me/interests', {
+                const response = await axios.get(`${API_URL}/users/me/interests`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -66,7 +67,7 @@ export default function EditInterestsDialog({ isOpen, onClose }: EditInterestsDi
             const token = localStorage.getItem('token')
             const interestIds = selectedInterests.map(interest => interests.indexOf(interest) + 1)
 
-            const response = await axios.put('http://localhost:8081/users/me/interests',
+            const response = await axios.put(`${API_URL}/users/me/interests`,
                 { interest_ids: interestIds },
                 {
                     headers: {

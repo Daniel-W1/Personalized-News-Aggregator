@@ -5,6 +5,7 @@ import Image from "next/image"
 import { useState } from "react"
 import { Bookmark, BookmarkCheck } from "lucide-react"
 import axios from "axios"
+import { API_URL } from "@/lib/utils"
 
 interface NewsFeedProps {
     category: string
@@ -32,7 +33,7 @@ export default function NewsFeed({ news, bookmarks, setBookmarks }: NewsFeedProp
             const isCurrentlyBookmarked = bookmarks.has(newsId)
 
             const response = await axios({
-                url: `http://localhost:8081/bookmarks/${newsId}`,
+                url: `${API_URL}/bookmarks/${newsId}`,
                 method: isCurrentlyBookmarked ? 'DELETE' : 'POST',
                 headers: {
                     Authorization: `Bearer ${token}`
