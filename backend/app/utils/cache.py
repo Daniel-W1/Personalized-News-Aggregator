@@ -14,7 +14,7 @@ class TTLCache:
                 del self._cache[key]
         return None
 
-    def set(self, key: str, value: Any, ttl_seconds: int = 60):
+    def set(self, key: str, value: Any, ttl_seconds: int = 300): # 5 minutes
         expiry = datetime.now() + timedelta(seconds=ttl_seconds)
         self._cache[key] = (value, expiry)
 
