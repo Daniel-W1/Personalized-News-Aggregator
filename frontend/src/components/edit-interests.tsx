@@ -87,7 +87,7 @@ export default function EditInterestsDialog({ isOpen, onClose }: EditInterestsDi
     if (isLoading) {
         return (
             <Dialog open={isOpen} onOpenChange={onClose}>
-                <DialogContent className="sm:max-w-screen-sm bg-gray-800 text-white">
+                <DialogContent className="sm:max-w-screen-sm">
                     <DialogHeader>
                         <DialogTitle>Edit Your Interests</DialogTitle>
                     </DialogHeader>
@@ -99,12 +99,12 @@ export default function EditInterestsDialog({ isOpen, onClose }: EditInterestsDi
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-screen-sm bg-gray-800 text-white">
+            <DialogContent className="sm:max-w-screen-sm">
                 <DialogHeader>
                     <DialogTitle>Edit Your Interests</DialogTitle>
                 </DialogHeader>
                 {error && (
-                    <div className="text-red-500 text-sm mb-4">
+                    <div className="text-destructive text-sm mb-4">
                         {error}
                     </div>
                 )}
@@ -114,7 +114,7 @@ export default function EditInterestsDialog({ isOpen, onClose }: EditInterestsDi
                             <Badge
                                 key={interest}
                                 variant="secondary"
-                                className="bg-blue-600 hover:bg-blue-700 cursor-pointer flex items-center gap-1 text-white"
+                                className="cursor-pointer flex items-center gap-1"
                                 onClick={() => handleInterestChange(interest)}
                             >
                                 {interest.charAt(0).toUpperCase() + interest.slice(1)}
@@ -122,7 +122,7 @@ export default function EditInterestsDialog({ isOpen, onClose }: EditInterestsDi
                             </Badge>
                         ))}
                     </div>
-                    <Card className="p-4 bg-gray-800 border-gray-700">
+                    <Card className="p-4">
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                             {interests
                                 .filter(interest => !selectedInterests.includes(interest))
@@ -130,7 +130,7 @@ export default function EditInterestsDialog({ isOpen, onClose }: EditInterestsDi
                                     <Button
                                         key={interest}
                                         variant="ghost"
-                                        className="justify-center text-gray-300 hover:text-white hover:bg-gray-700"
+                                        className="justify-center"
                                         onClick={() => handleInterestChange(interest)}
                                     >
                                         <Plus size={16} className="mr-1" />
@@ -141,7 +141,7 @@ export default function EditInterestsDialog({ isOpen, onClose }: EditInterestsDi
                     </Card>
                 </div>
                 <DialogFooter>
-                    <Button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700">Save Changes</Button>
+                    <Button onClick={handleSave}>Save Changes</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
