@@ -37,7 +37,6 @@ async def create_user(user: UserSignupSchema = Body(...), db: Session = Depends(
         lastname=user.lastname,
         email=user.email,
         password=hashed_password,
-        onboarded=False
     )
 
     await create_user_profile(db_user.id, user.interests, db)
@@ -128,6 +127,7 @@ async def get_user_interests(
     if not user:
         return {"message": "User not found", "success": False}
     
+    print(user.interests)
     return {"data": user.interests, "success": True}
 
 @app.get("/news", tags=["news"])
@@ -173,9 +173,9 @@ async def get_news(
             
         else:
             # Process single category
-            await graph.ainvoke({
-                "category": category
-            })
+            # await graph.ainvoke({
+            #     "category": category
+            # })
 
             # Get processed news from database for the category
             news_items = db.query(News).filter(
