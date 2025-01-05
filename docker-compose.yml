@@ -7,11 +7,11 @@ services:
       dockerfile: backend/Dockerfile
     container_name: futurenews-backend
     environment:
-      - secret=${JWT_SECRET}
-      - algorithm=${JWT_ALGORITHM}
-      - openai_api_key=${OPENAI_API_KEY}
-      - news_api_key=${NEWS_API_KEY}
-      - media_stack_api_key=${MEDIA_STACK_API_KEY}
+      - SECRET=${secret}
+      - ALGORITHM=${algorithm}
+      - OPENAI_API_KEY=${openai_api_key}
+      - NEWS_API_KEY=${news_api_key}
+      - MEDIA_STACK_API_KEY=${media_stack_api_key}
     ports:
       - "8081:8081"
     volumes:

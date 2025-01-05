@@ -1,8 +1,18 @@
 FROM node:20
 
 WORKDIR /app
-COPY package*.json ./
+
+# Copy package files
+COPY frontend/package*.json ./
+
+# Install dependencies
 RUN npm install
-COPY . .
+
+# Copy the rest of the frontend application
+COPY frontend/ ./
+
+# Expose port
 EXPOSE 3000
-CMD npm run dev
+
+# Start the development server
+CMD ["npm", "run", "dev"]
