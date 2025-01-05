@@ -118,6 +118,7 @@ export default function NewsFeed({ news }: NewsFeedProps) {
                   <Image
                     src={selectedArticle.image_url}
                     alt={selectedArticle.title}
+                    style={{objectFit: "contain"}}
                     fill
                     className="object-cover rounded-lg"
                   />

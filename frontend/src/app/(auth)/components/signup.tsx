@@ -58,10 +58,9 @@ export default function SignupForm() {
         interests: formData.interests.map(interest => interests.indexOf(interest) + 1)
       })
 
-      console.log("response", response)
-
       if (response.data.success) {
         localStorage.setItem('token', response.data.access_token)
+        localStorage.setItem('user', JSON.stringify(response.data.user))
         router.push('/news')
       } else {
         setError(response.data.message || 'Signup failed')

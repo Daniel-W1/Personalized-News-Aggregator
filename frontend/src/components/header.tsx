@@ -16,6 +16,8 @@ import { useRouter } from 'next/navigation'
 
 export default function Header() {
     const [isEditInterestsOpen, setIsEditInterestsOpen] = useState(false)
+    const user = JSON.parse(localStorage.getItem('user') || '{}')
+
     const router = useRouter()
 
     const handleLogout = () => {
@@ -32,15 +34,15 @@ export default function Header() {
                         <DropdownMenuTrigger asChild>
                             <Avatar className="h-8 w-8 cursor-pointer">
                                 <AvatarImage src="/avatars/01.png" alt="@username" />
-                                <AvatarFallback className="text-black grid place-items-center">UN</AvatarFallback>
+                                <AvatarFallback className="text-black grid place-items-center">{user?.firstname[0] + user?.lastname[0]}</AvatarFallback>
                             </Avatar>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="w-56" align="end" forceMount>
                             <DropdownMenuLabel className="font-normal">
                                 <div className="flex flex-col space-y-1">
-                                    <p className="text-sm font-medium leading-none">username</p>
+                                    <p className="text-sm font-medium leading-none">{user?.firstname + " " + user?.lastname}</p>
                                     <p className="text-xs leading-none text-muted-foreground">
-                                        user@example.com
+                                        {user?.email}
                                     </p>
                                 </div>
                             </DropdownMenuLabel>
