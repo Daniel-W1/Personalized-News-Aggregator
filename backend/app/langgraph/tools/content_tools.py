@@ -1,6 +1,5 @@
 from typing import Dict, Any, List
 import requests
-from datetime import datetime, timedelta
 from decouple import config
 
 class NewsAPITool:
