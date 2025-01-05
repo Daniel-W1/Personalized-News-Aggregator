@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { BookmarkCheck } from "lucide-react"
 
 interface CategorySelectorProps {
   categories: string[]
@@ -7,10 +8,10 @@ interface CategorySelectorProps {
   onSelectCategory: (category: string) => void
 }
 
-export default function CategorySelector({ 
-  categories, 
-  selectedCategory, 
-  onSelectCategory 
+export default function CategorySelector({
+  categories,
+  selectedCategory,
+  onSelectCategory
 }: CategorySelectorProps) {
   return (
     <div className="flex flex-wrap gap-2 mb-8">
@@ -24,6 +25,12 @@ export default function CategorySelector({
           {category}
         </Button>
       ))}
+
+      <Button variant={"ghost"}
+        className={cn("text-sm capitalize hover:bg-blue-500 hover:text-white", selectedCategory === "bookmarks" && "bg-blue-500 text-white")}
+        onClick={() => onSelectCategory("bookmarks")}>
+        Bookmarks <BookmarkCheck />
+      </Button>
     </div>
   )
 }
