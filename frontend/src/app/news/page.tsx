@@ -39,10 +39,6 @@ export default function NewsPage() {
           }
         } else {
           setError(response.data.message || 'Failed to fetch interests')
-          if (response.data.message === "Unauthorized") {
-            router.push('/')
-            return
-          }
         }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
