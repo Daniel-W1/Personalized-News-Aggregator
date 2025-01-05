@@ -12,6 +12,8 @@ from app.profile.profile_handler import create_user_profile
 from app.langgraph.graph import create_news_processing_graph
 from decouple import config
 from app.utils.cache import TTLCache
+from app.models.bookmark import Bookmark
+
 
 # Create tables
 models.Base.metadata.create_all(bind=engine)
@@ -210,3 +212,73 @@ async def get_news(
             "error": str(e),
             "success": False
         }
+
+@app.post("/bookmarks/{news_id}", tags=["bookmarks"])
+async def add_bookmark(
+    news_id: int,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    print(current_user)
+    if not current_user:
+        return {"message": "Unauthorized", "success": False}
+    
+    # Check if news exists
+    news = db.query(News).filter(News.id == news_id).first()
+    if not news:
+        return {"message": "News not found", "success": False}
+    
+    # Check if bookmark already exists
+    existing_bookmark = db.query(Bookmark).filter(
+        Bookmark.user_id == current_user["user_id"],
+        Bookmark.news_id == news_id
+    ).first()
+    
+    if existing_bookmark:
+        return {"message": "Bookmark already exists", "success": False}
+    
+    # Create new bookmark
+    bookmark = Bookmark(user_id=current_user["user_id"], news_id=news_id)
+    db.add(bookmark)
+    db.commit()
+    
+    return {"message": "Bookmark added successfully", "success": True}
+
+@app.delete("/bookmarks/{news_id}", tags=["bookmarks"])
+async def remove_bookmark(
+    news_id: int,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    if not current_user:
+        return {"message": "Unauthorized", "success": False}
+    
+    bookmark = db.query(Bookmark).filter(
+        Bookmark.user_id == current_user["user_id"],
+        Bookmark.news_id == news_id
+    ).first()
+    
+    if not bookmark:
+        return {"message": "Bookmark not found", "success": False}
+    
+    db.delete(bookmark)
+    db.commit()
+    
+    return {"message": "Bookmark removed successfully", "success": True}
+
+@app.get("/bookmarks", tags=["bookmarks"])
+async def get_bookmarks(
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    if not current_user:
+        return {"message": "Unauthorized", "success": False}
+    
+    bookmarks = db.query(Bookmark).filter(
+        Bookmark.user_id == current_user["user_id"]
+    ).all()
+    
+    return {
+        "data": [bookmark.news for bookmark in bookmarks],
+        "success": True
+    }
