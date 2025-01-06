@@ -105,8 +105,10 @@ npm run dev
 
 Alternatively, use Docker Compose to run both services:
 
+add the .env at the root of the project for the docker-compose.yml file to work
+
 ```
-    docker-compose up --build
+docker-compose up --build
 ```
 
 This will start both the backend and frontend containers.
